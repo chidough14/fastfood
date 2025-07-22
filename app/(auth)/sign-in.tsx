@@ -3,13 +3,17 @@ import React, { useState } from 'react'
 import { Link, router } from 'expo-router'
 import CustomInput from '@/components/CustomInput'
 import CustomButton from '@/components/CustomButton'
+import { signIn } from '@/lib/appwrite'
+import  * as Sentry from '@sentry/react-native'
 
 export default function SignIn() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [form, setForm] = useState({ email: '', password: '' })
 
   const submit = async () => {
-    if (!form.email || !form.password) {
+     const {email, password} = form
+
+    if (!email || !password) {
       Alert.alert('Error', 'Please fill in all fields')
       return
     }
@@ -18,7 +22,7 @@ export default function SignIn() {
 
     try {
       // Call appwrite Sign in function here
-
+      await signIn({email, password})
 
       Alert.alert('Success', 'User signed in successfully')
       router.replace('/')
@@ -26,6 +30,7 @@ export default function SignIn() {
     } catch (error: any) {
       console.error(error)
       Alert.alert('Error', error.message || 'An error occurred while signing in')
+      Sentry.captureEvent(error)
     } finally {
       setIsSubmitting(false)
     }
