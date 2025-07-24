@@ -7,7 +7,7 @@ export default function MenuCard({ item: { image_url, name, price } }: { item: M
 
   const imageUrl = `${image_url}`
 
-  console.log(imageUrl)
+  // console.log(imageUrl)
 
   return (
     <TouchableOpacity className='menu-card' style={Platform.OS === 'android' ? { shadowColor: '#878787', elevation: 10 } : {}}>

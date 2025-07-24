@@ -9,6 +9,8 @@ import CartButton from '@/components/CartButton'
 import cn from 'clsx'
 import MenuCard from '@/components/MenuCard'
 import { MenuItem } from '@/type'
+import Filter from '@/components/Filter'
+import SearchBar from '@/components/SearchBar'
 
 export default function Search() {
   const { category, query } = useLocalSearchParams<{ query: string; category: string }>()
@@ -23,6 +25,7 @@ export default function Search() {
 
   useEffect(() => {
     refetch({ category, query, limit: 6 })
+    
   }, [category, query])
 
   // console.log(data?.length)
@@ -58,18 +61,14 @@ export default function Search() {
               <CartButton />
             </View>
 
-            <Text>
-              Search Input
-            </Text>
+            <SearchBar />
 
-            <Text>
-             Filter
-            </Text>
+            <Filter categories={categories!} />
           </View>
         )}
         ListEmptyComponent={() => !loading && <Text className='text-center text-gray-500'>No results found</Text>}
       />
-      {/* <Button title='seed'  onPress={()=>seed().catch((error)=> console.log("Failed to seed", error))}/> */}
+      {/* <Button title='Seed' onPress={()=>seed().catch((error)=> console.log("Failed to seed", error))}/> */}
     </SafeAreaView>
   )
 }
