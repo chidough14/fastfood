@@ -62,10 +62,42 @@ export const signIn = async ({ email, password }: SignInParams) => {
   }
 }
 
+// Logout the current user
+export const logout = async () => {
+  try {
+    await account.deleteSession('current')  // Ends the current session
+  } catch (error) {
+    console.log('Logout error:', error)
+    throw new Error(error as string)
+  }
+}
+
+
+// export const getCurrentUser = async () => {
+//   try {
+//     const currentAccount = await account.get()
+//     if (!currentAccount) throw Error
+
+//     const currentUser = await databases.listDocuments(
+//       appwriteConfig.databaseId,
+//       appwriteConfig.userCollectionId,
+//       [Query.equal('accountId', currentAccount.$id)]
+//     )
+
+//     if (!currentUser) throw Error
+
+//     return currentUser.documents[0]
+//   } catch (error) {
+//     console.log("Error", error)
+//     throw new Error(error as string)
+//   }
+// }
+
 export const getCurrentUser = async () => {
   try {
     const currentAccount = await account.get()
-    if (!currentAccount) throw Error
+
+    if (!currentAccount) return null
 
     const currentUser = await databases.listDocuments(
       appwriteConfig.databaseId,
@@ -73,14 +105,45 @@ export const getCurrentUser = async () => {
       [Query.equal('accountId', currentAccount.$id)]
     )
 
-    if (!currentUser) throw Error
+    if (!currentUser.documents.length) return null
 
     return currentUser.documents[0]
-  } catch (error) {
-    console.log("Error", error)
-    throw new Error(error as string)
+  } catch (error: any) {
+    // Optional: log only if not already handled
+    console.log("Error fetching current user", error)
+    return null // Instead of throwing
   }
 }
+
+
+// export const getCurrentUser = async () => {
+//   try {
+//     const currentAccount = await account.get()
+//     if (!currentAccount) throw Error
+
+//     const currentUser = await databases.listDocuments(
+//       appwriteConfig.databaseId,
+//       appwriteConfig.userCollectionId,
+//       [Query.equal('accountId', currentAccount.$id)]
+//     )
+
+//     if (!currentUser.documents.length) throw Error
+
+//     // Merge the document with phone from the Auth account
+//     const userDoc = currentUser.documents[0]
+
+//     return {
+//       ...userDoc,
+//       phone: currentAccount.phone, // ✅ add phone from Auth
+//       email: currentAccount.email, // optional
+//       name: currentAccount.name,   // optional
+//       avatar: userDoc.avatar
+//     }
+//   } catch (error) {
+//     console.log("Error", error)
+//     throw new Error(error as string)
+//   }
+// }
 
 
 export const getMenu = async ({ category, query }: GetMenuParams) => {
@@ -106,12 +169,12 @@ export const getMenu = async ({ category, query }: GetMenuParams) => {
 
 export const getCategories = async () => {
   try {
-   const categories = await databases.listDocuments(
-      appwriteConfig.databaseId,  
+    const categories = await databases.listDocuments(
+      appwriteConfig.databaseId,
       appwriteConfig.categoriesCollectionId,
-   )
+    )
 
-   return categories.documents
+    return categories.documents
 
   } catch (error) {
     console.log("Error", error)
